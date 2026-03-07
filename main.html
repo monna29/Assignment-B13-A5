@@ -22,7 +22,30 @@
 </head>
 
 <body>
-    <h3 class="text-7xl font-bold text-center">hello world</h3>
+    <header class="flex justify-between w-[95%] mx-auto">
+        <!-- navbar -->
+        <nav class="navbar bg-base-100 shadow-sm flex justify-between">
+            <div class="flex  gap-3">
+
+                <img src="./assets/github-logo.png" class="w-7 h-7" alt="">
+
+                <h1 class=" sm:text-2xl font-bold mb-2">GitHub Issues Tracker</h1>
+
+            </div>
+            <div class="flex gap-2">
+                <input type="text"  placeholder="Search issu..." class="input input-bordered w-24 md:w-auto" />
+                
+                <div class="dropdown dropdown-end">
+                    <div>
+                        <div class="">
+                            <button class="btn btn-primary">
+                                <i class="fa-solid fa-plus"></i> Primary</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
 </body>
 
 </html>
