@@ -35,50 +35,50 @@ function displayIssues(issues) {
     issueCount.innerText = issues.length + " Issues"
 
     issues.forEach(issue => {
- 
-        function getPriorityClass(priority){
 
-if(priority === "high"){
-return "bg-red-100 text-red-600"
-}
+        function getPriorityClass(priority) {
 
-if(priority === "medium"){
-return "bg-yellow-100 text-yellow-700"
-}
+            if (priority === "high") {
+                return "bg-red-100 text-red-600"
+            }
 
-return "bg-green-100 text-green-700"
+            if (priority === "medium") {
+                return "bg-yellow-100 text-yellow-700"
+            }
 
-}
+            return "bg-green-100 text-green-700"
 
-
-function getStatusClass(status){
-
-if(status === "open"){
-return "bg-green-100 text-green-700"
-}
-
-return "bg-purple-100 text-purple-700"
-
-}
+        }
 
 
-function getLabelClass(label){
+        function getStatusClass(status) {
 
-if(label === "bug"){
-return "bg-red-100 text-red-600"
-}
+            if (status === "open") {
+                return "bg-green-100 text-green-700"
+            }
 
-if(label === "feature"){
-return "bg-blue-100 text-blue-600"
-}
+            return "bg-purple-100 text-purple-700"
 
-if(label === "enhancement"){
-return "bg-green-100 text-green-600"
-}
+        }
 
-return "bg-gray-100 text-gray-600"
 
-}
+        function getLabelClass(label) {
+
+            if (label === "bug") {
+                return "bg-red-100 text-red-600"
+            }
+
+            if (label === "feature") {
+                return "bg-blue-100 text-blue-600"
+            }
+
+            if (label === "enhancement") {
+                return "bg-green-100 text-green-600"
+            }
+
+            return "bg-gray-100 text-gray-600"
+
+        }
 
 
         const border =
@@ -88,56 +88,55 @@ return "bg-gray-100 text-gray-600"
 
         const card = document.createElement("div")
 
-        card.className =
-            `bg-white p-4 rounded shadow border-t-4 ${border} cursor-pointer hover:shadow-lg`
+
 
         card.innerHTML = `
-
-           <div class="flex justify-between">
-
-        ${issue.status === "open"
+<div  onclick="loadWordDetails(${issue.id})"  class="bg-white p-4 rounded shadow border-t-4 ${border} cursor-pointer hover:shadow-lg">
+  
+  <div class="flex justify-between">
+    ${issue.status === "open"
                 ? "<img src='assets/Open-Status.png' class='w-6'>"
-                : "<img src='assets/Closed- Status .png'>"
+                : "<img src='assets/Closed- Status .png' class='w-6'>"
             }
-        
-        <div>
-        <span class="px-2 py-1 text-xs rounded-full ${getPriorityClass(issue.priority)}">
-        ${issue.priority}
-        </span>
-        </div>
-        </div>
 
-        <h2 class="font-bold text-lg">
-        ${issue.title}
-        </h2>
-        
-        <p class="text-sm text-gray-600 mt-2">
-        ${issue.description.slice(0, 80)}...
-        </p>
-        
-        <div class="flex gap-2 mt-3 flex-wrap">
-        
-         <p class="${issue.labels?.[0] === "bug"
-                ? "bg-[#FECACA] text-red-500"
-                : "bg-green-200 text-green-700"
-            } px-2 py-1 rounded inline-block">
-        ${issue.labels?.[0]}
-        </p>  
-        </div>
-   
-        </div>
-        <hr>
-        <p class="text-xs text-gray-500 mt-2">
-        Author: ${issue.author}
-        </p>
-        
-        <p class="text-xs text-gray-400">
-        Created: ${issue.createdAt}
-        </p>
+    <span class="px-2 py-1 text-xs rounded-full ${getPriorityClass(issue.priority)}">
+      ${issue.priority}
+    </span>
+  </div>
 
-`
+  <h2 class="font-bold text-lg mt-2">
+    ${issue.title}
+  </h2>
 
-        // card.onclick = () => openModal(issue)
+  <p class="text-sm text-gray-600 mt-2">
+    ${issue.description.slice(0, 80)}...
+  </p>
+
+  <div class="flex gap-2 mt-3 flex-wrap">
+    ${issue.labels?.map(label => {
+                let colorClass = "";
+                if (label === "bug") colorClass = "bg-red-100 text-red-600";
+                else if (label === "help wanted") colorClass = "bg-yellow-100 text-yellow-700";
+                else if (label === "feature") colorClass = "bg-blue-100 text-blue-600";
+                else if (label === "enhancement") colorClass = "bg-green-100 text-green-600";
+                else colorClass = "bg-gray-100 text-gray-600";
+
+                return `<p class="px-2 py-1 rounded-full text-xs font-medium ${colorClass}">${label}</p>`;
+            }).join('') || ""}
+  </div>
+
+  <hr class="my-2">
+
+  <p class="text-xs text-gray-500 mt-2">
+    Author: ${issue.author}
+  </p>
+
+  <p class="text-xs text-gray-400">
+    Created: ${issue.createdAt}
+  </p>
+</div>
+`;
+
 
         container.appendChild(card)
 
@@ -210,35 +209,56 @@ function searchIssue() {
 }
 
 
-
-function openModal(issue) {
-
-    const modal = document.getElementById("modal")
-
-    modal.classList.remove("hidden")
-    modal.classList.add("flex")
-
-    document.getElementById("mTitle").innerText = issue.title
-    document.getElementById("mDesc").innerText = issue.description
-    document.getElementById("mStatus").innerText = "Status: " + issue.status
-    document.getElementById("mAuthor").innerText = "Author: " + issue.author
-    document.getElementById("mPriority").innerText = "Priority: " + issue.priority
-    document.getElementById("mLabel").innerText = "Label: " + issue.label
-    document.getElementById("mDate").innerText = "Created: " + issue.createdAt
-
+const loadWordDetails = async (id) => {
+    const url = `https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`
+    console.log(url);
+    const res = await fetch(url);
+    const details = await res.json();
+    displayWordDetails(details.data);
 }
 
+const displayWordDetails = (word) => {
+      
+    const detailsBox = document.getElementById("details-container");
+    detailsBox.innerHTML = `
+ <div class="">
+   <div>
+       <h3 class="font-bold text-2xl mt-2">${word.title} </h3>
+       <div class="flex gap-2 my-2">
+           <p class="p-1 rounded-sm text-white bg-[#00A96E]"> ${word.status}
+           <p>.Opened by <span> ${word.author} </span></p>
+           <p>22/02/202
+       </div>
+       <div class="flex gap-2 mt-3 flex-wrap">
+    ${word.labels?.map(label => {
+                let colorClass = "";
+                if (label === "bug") colorClass = "bg-red-100 text-red-600";
+                else if (label === "help wanted") colorClass = "bg-yellow-100 text-yellow-700";
+                else if (label === "feature") colorClass = "bg-blue-100 text-blue-600";
+                else if (label === "enhancement") colorClass = "bg-green-100 text-green-600";
+                else colorClass = "bg-gray-100 text-gray-600";
 
-
-function closeModal() {
-
-    const modal = document.getElementById("modal")
-
-    modal.classList.add("hidden")
-    modal.classList.remove("flex")
-
+                return `<p class="px-2 py-1 rounded-full text-xs font-medium ${colorClass}">${label}</p>`;
+            }).join('') || ""}
+  </div>
+      <p class="my-2"> ${word.description} </p>
+   </div>
+   <div class="flex rounded-xs p-3 bg-[#e3eaf3] mt-3">
+       <div class="flex-1">
+           <p>Assignee:</p>
+           <p class="font-bold">${word.author}</p>
+       </div>
+       <div class="flex-1">
+           <p>Priority </p>
+           <span class="px-2 py-1 text-xs text-white bg-[#c24747] rounded-full ${word.priority}">
+      ${word.priority}
+    </span>
+       </div>
+   </div>
+ </div>
+ `
+    document.getElementById("my_modal_5").showModal();
 }
-
 
 
 loadIssues()
